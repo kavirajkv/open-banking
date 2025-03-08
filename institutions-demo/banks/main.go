@@ -57,12 +57,15 @@ func ConnectDB(dbname string) *sql.DB {
 func route() *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/get_account", get_account).Methods("POST", "OPTIONS")
+	router.HandleFunc("/icici/get_account", get_account("icici")).Methods("POST", "OPTIONS")
+	router.HandleFunc("/axis/get_account", get_account("axis")).Methods("POST", "OPTIONS")
+	router.HandleFunc("/hdfc/get_account", get_account("hdfc")).Methods("POST", "OPTIONS")
 
 	return router
 }
 
-func get_account(w http.ResponseWriter, r *http.Request) {
+func get_account(db string)http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
 	var accreq accoutreq
 
 	err := json.NewDecoder(r.Body).Decode(&accreq)
@@ -70,7 +73,7 @@ func get_account(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Enter string message", http.StatusBadRequest)
 	}
 
-	db := ConnectDB("hdfc")
+	db := ConnectDB(db)
 	defer db.Close()
 	statement := "SELECT account_number,ifsc_code,account_type,branch_name FROM accounts WHERE user_id = (SELECT user_id FROM users WHERE phone_number = $1);"
 	row := db.QueryRow(statement, accreq.Phone)
@@ -82,6 +85,7 @@ func get_account(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(accres)
 
+}
 }
 
 func main() {
