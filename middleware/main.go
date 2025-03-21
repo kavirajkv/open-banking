@@ -1,16 +1,15 @@
 package main
 
 import(
-	"middleware/Aggregation"
+	"middleware/routes"
 	"fmt"
 	"net/http"
 )
 
 func main() {	
-	r := Aggregation.Route()
+	r := routes.Router()
 	
-	http.ListenAndServe(":8080", r)
 	fmt.Println("Server running at port 8080")
-	
+	http.ListenAndServe(":8080", r)	
 	
 }

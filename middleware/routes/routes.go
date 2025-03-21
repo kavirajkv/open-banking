@@ -1,35 +1,28 @@
 package routes
 
-// import (
-// 	// "transhabit/auth"
-// 	// "transhabit/middleware"
+import (
+	"middleware/Aggregation"
+	"middleware/users"
 
-// 	"github.com/gorilla/mux"
-// )
 
-// func Router() *mux.Router{
-// 	router:=mux.NewRouter()
+	"github.com/gorilla/mux"
+)
 
-// 	//user handling
-// 	// router.HandleFunc("/api/login",auth.Login).Methods("GET","OPTIONS")
-// 	// router.HandleFunc("/api/registeruser",)
+func Router() *mux.Router{
+	router:=mux.NewRouter()
 
-// 	//routes for consent management
-// 	// router.HandleFunc("/api/createcustomer",middleware.CreateCustomer).Methods("POST","OPTIONS")
-// 	// router.HandleFunc("/api/updatecustomer",middleware.UpdateCustomer).Methods("PATCH","OPTIONS")
-// 	// router.HandleFunc("/api/deletecustomer{id}",middleware.DeleteCustomer).Methods("DELETE","OPTIONS")
-// 	// router.HandleFunc("/api/listcustomers",middleware.ListCustomers).Methods("GET","OPTIONS")
-// 	// router.HandleFunc("/api/customerbyId/{id}",middleware.CustomerbyId).Methods("GET","OPTIONS")
+	//  Aggregation routes  //
+	//route to get all bank account details
+	router.HandleFunc("/get_aggregated_accounts", Aggregation.AggregateBankAccount).Methods("POST", "OPTIONS")
 
-// 	// //routes for aggregation
-// 	// router.HandleFunc("/api/addtransaction",middleware.AddTransaction).Methods("POST","OPTIONS")
-// 	// router.HandleFunc("/api/deletetransaction{id}",middleware.DeleteTransaction).Methods("DELETE","OPTIONS")
-// 	// router.HandleFunc("/api/listtransactions",middleware.ListTransactions).Methods("GET","OPTIONS")
-// 	// router.HandleFunc("/api/transactionbyId/{id}",middleware.TransactionbyId).Methods("GET","OPTIONS")
 
-// 	//routes for data transfer
+	// User routes  //
+	//user registration route
+	router.HandleFunc("/register_user", users.RegisterUser).Methods("POST", "OPTIONS")
+	//get user details route
+	router.HandleFunc("/get_user_details", users.GetUserDetails).Methods("POST", "OPTIONS")
 
 	
 
-// 	return router
-// }
+	return router
+}
