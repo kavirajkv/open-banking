@@ -2,8 +2,8 @@ package routes
 
 import (
 	"middleware/Aggregation"
+	"middleware/consent"
 	"middleware/users"
-
 
 	"github.com/gorilla/mux"
 )
@@ -22,7 +22,9 @@ func Router() *mux.Router{
 	//get user details route
 	router.HandleFunc("/get_user_details", users.GetUserDetails).Methods("POST", "OPTIONS")
 
-	
+	// Consent routes //
+	//create consent
+	router.HandleFunc("/create_consent",consent.CreateConsent).Methods("POST","OPTIONS")
 
 	return router
 }
