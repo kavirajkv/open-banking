@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 	"github.com/lib/pq"
+	"github.com/google/uuid"
 )
 
 // func to create consent
@@ -20,7 +21,7 @@ func CreateConsent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Enter valid details", http.StatusBadRequest)
 	}
 
-	consentid := "consent" + time.Now().String() + consent.User_did
+	consentid := "consent_"+uuid.New().String()
 	expiry, err := time.Parse("2006-01-02", consent.Expiry)
 	if err != nil {
 		http.Error(w, "Invalid date format", http.StatusBadRequest)
@@ -83,4 +84,60 @@ func GetConsentDetails(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(consents)
+}
+
+
+func GetConsentbyId(w http.ResponseWriter,r *http.Request){
+	db := database.ConnectDB("openbanking")
+	defer db.Close()
+
+	var req ConsentbyIdreq
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Enter valid details", http.StatusBadRequest)
+	}
+
+	statement := "SELECT user_did,tpa_id,financial_institution_id,requested_data,expiry_time,status FROM consent WHERE consent_id=$1;"
+	row:= db.QueryRow(statement, req.Consent_id)
+	var consent ConsentbyIdres
+	err = row.Scan(&consent.User_did,&consent.Tpa_id,&consent.Financial_institution_id,pq.Array(&consent.Requested_data),&consent.Expiry,&consent.Status)
+	if err != nil {
+		http.Error(w, "Consent not found", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(consent)
+}
+
+
+// func to update consent
+func UpdateConsent(w http.ResponseWriter, r *http.Request) {
+	db := database.ConnectDB("openbanking")
+	defer db.Close()
+
+	var req UpdateConsentStatusreq
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Enter valid details", http.StatusBadRequest)
+	}
+
+	statement := "UPDATE consent SET status=$1 WHERE consent_id=$2;"
+	res, err := db.Exec(statement, req.Status, req.Consent_id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+
+	if rowsAffected == 0 {
+		http.Error(w, "Failed to update consent", http.StatusInternalServerError)
+		return
+	}
+
+	msg := fmt.Sprintf("Update successful for %v", rowsAffected)
+
+	response := ConsentResponse{Message: msg}
+
+	json.NewEncoder(w).Encode(response)
 }

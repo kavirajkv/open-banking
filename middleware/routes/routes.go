@@ -27,6 +27,10 @@ func Router() *mux.Router{
 	router.HandleFunc("/create_consent",consent.CreateConsent).Methods("POST","OPTIONS")
 	//get consent details
 	router.HandleFunc("/get_consent_details",consent.GetConsentDetails).Methods("POST","OPTIONS")
+	//get consent details by id
+	router.HandleFunc("/get_consent_details_by_id",consent.GetConsentbyId).Methods("POST","OPTIONS")
+	//update consent status
+	router.HandleFunc("/update_consent_status",consent.UpdateConsent).Methods("POST","OPTIONS")
 
 	return router
 }
