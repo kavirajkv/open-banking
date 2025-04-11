@@ -4,26 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-
 	"net/http"
 	"sync"
 )
 
-// account_req struct to hold phone number
-type account_req struct {
-	Phone string `json:"phone"`
-}
-
-// InstitutionResponse struct to hold response from financial institution
-type InstitutionResponse struct {
-	Institution string      `json:"institution"`
-	Data        interface{} `json:"data"`
-	Error       string      `json:"error"`
-}
 
 // get all bank account details
 func AggregateBankAccount(w http.ResponseWriter, r *http.Request) {
-	var accountReq account_req
+	var accountReq Account_req
 
 	err := json.NewDecoder(r.Body).Decode(&accountReq)
 	if err != nil {
@@ -94,5 +82,7 @@ func AggregateBankAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
-
+//func to get data from specified institute of an user
+func GetData(w http.ResponseWriter,r *http.Request){
+	
+}
