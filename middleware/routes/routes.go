@@ -20,6 +20,10 @@ func Router() *mux.Router{
 	//user registration route
 	router.HandleFunc("/send_otp", users.SendOTP).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register_user", users.VerifyandRegister).Methods("POST", "OPTIONS")
+
+	//user login route
+	router.HandleFunc("/login_user", users.LoginUserOTP).Methods("POST", "OPTIONS")
+	router.HandleFunc("/verify_otp", users.LoginOTPverify).Methods("POST", "OPTIONS")
 	//get user details route
 	router.HandleFunc("/get_user_details", users.GetUserDetails).Methods("POST", "OPTIONS")
 
