@@ -13,7 +13,7 @@ type ConsentResponse struct {
 }
 
 type ConsentDetailsrequest struct {
-	User_did string `json:"user_did"`
+	Phone string `json:"phone"`
 }
 
 type ConsentDetailsResponse struct {

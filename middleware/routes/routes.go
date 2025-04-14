@@ -14,6 +14,10 @@ func Router() *mux.Router{
 	//  Aggregation routes  //
 	//route to get all bank account details
 	router.HandleFunc("/get_aggregated_accounts", Aggregation.AggregateBankAccount).Methods("POST", "OPTIONS")
+	//route to get all insurance details
+	router.HandleFunc("/get_aggregated_insurance", Aggregation.AggregateInsurance).Methods("POST", "OPTIONS")
+	//route to get all investment details
+	router.HandleFunc("/get_aggregated_investments", Aggregation.AggregateInvest).Methods("POST", "OPTIONS")
 
 
 	// User routes  //

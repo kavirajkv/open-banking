@@ -6,6 +6,7 @@ import(
 	"net/http"
 	"github.com/joho/godotenv"
 	"log"
+	"github.com/rs/cors"
 )
 
 func init() {
@@ -17,8 +18,16 @@ func init() {
 
 func main() {	
 	r := routes.Router()
+
+	c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"}, // Allows all origins
+        AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowedHeaders: []string{"Content-Type", "Authorization"},
+    })
+
+	handler := c.Handler(r)
 	
 	fmt.Println("Server running at port 8080")
-	http.ListenAndServe(":8080", r)	
+	http.ListenAndServe(":8080", handler)	
 	
 }

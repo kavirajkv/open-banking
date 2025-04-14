@@ -63,8 +63,8 @@ func GetConsentDetails(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Enter valid details", http.StatusBadRequest)
 	}
 
-	statement := "SELECT consent_id,tpa_id,financial_institution_id,requested_data,expiry_time,status FROM consent WHERE user_did=$1;"
-	rows,err:= db.Query(statement, req.User_did)
+	statement := "SELECT consent_id,tpa_id,financial_institution_id,requested_data,expiry_time,status FROM consent WHERE user_did=(select did from did where user_id=(select user_id from users where phone_number=$1));"
+	rows,err:= db.Query(statement, req.Phone)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
