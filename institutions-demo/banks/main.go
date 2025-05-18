@@ -45,6 +45,13 @@ type transaction struct {
 	Time          time.Time `json:"time"`
 }
 
+type Nominee struct {
+	NomineeName string `json:"nominee"`
+	Relation string `json:"relation"`
+	Status string `json:"status"`
+}
+
+
 // db connection based on database name
 func ConnectDB(dbname string) *sql.DB {
 	db_pass := os.Getenv("PG_PASSWORD")
@@ -67,6 +74,7 @@ func route() *mux.Router {
 	router.HandleFunc("/axis/get_account", get_account("axis")).Methods("POST", "OPTIONS")
 	router.HandleFunc("/hdfc/get_account", get_account("hdfc")).Methods("POST", "OPTIONS")
 	router.HandleFunc("/get_transactions", get_transactions).Methods("POST", "OPTIONS")
+	router.HandleFunc("/get_nominee_details", get_nominee_details).Methods("POST", "OPTIONS")
 
 	return router
 }
@@ -127,6 +135,28 @@ func get_transactions(w http.ResponseWriter, r *http.Request) {
 	response.Transactions = transactions
 
 	json.NewEncoder(w).Encode(response)
+
+}
+
+func get_nominee_details(w http.ResponseWriter,r *http.Request){
+	var transactionrequest transactionreq
+
+	err := json.NewDecoder(r.Body).Decode(&transactionrequest)
+	if err != nil {
+		http.Error(w, "Enter valid account number", http.StatusBadRequest)
+	}
+
+	db := ConnectDB(transactionrequest.Bank)
+	defer db.Close()
+	statement := "select nominee,nominee_relationship,nominee_status from accounts where account_id=(select account_id from accounts where account_number=$1);"
+	row := db.QueryRow(statement, transactionrequest.Accno)
+	var nomineedetail Nominee
+	errors := row.Scan(&nomineedetail.NomineeName,&nomineedetail.Relation,&nomineedetail.Status)
+	if errors != nil {
+		http.Error(w, errors.Error(), http.StatusNotFound)
+
+	}
+	json.NewEncoder(w).Encode(nomineedetail)
 
 }
 
